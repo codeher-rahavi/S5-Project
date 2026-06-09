@@ -4,12 +4,12 @@ import { useNavigate } from "react-router-dom";
 import PassWord from "../../components/input/password";
 import RepeatPassWord from "../../components/input/repeatPassword";
 import EmailInput from "../../components/input/email";
-import { useDebounce } from "../../hooks/useDebounce"; 
+import { useDebounce } from "../../hooks/useDebounce";
 
 const SignUp = () => {
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
-    const [status, setStatus] = useState(""); 
+    const [status, setStatus] = useState("");
     const [passWord, setPassWord] = useState("");
     const [strength, setStrength] = useState({ score: 0, message: "", color: "gray" });
 
@@ -40,7 +40,6 @@ const SignUp = () => {
 
     useEffect(() => {
         const validateEmail = async () => {
-            // 💡 UPDATED: Regex now strictly enforces your institutional organizational domain requirement
             const orgDomainRegex = /^[a-z0-9._%+-]+@bitsathy\.ac\.in$/;
 
             if (!debouncedEmail) {
@@ -48,7 +47,6 @@ const SignUp = () => {
                 return;
             }
 
-            // 🧼 SANITIZE local check string to lowercase instantly
             const sanitizedCheckEmail = debouncedEmail.trim().toLowerCase();
 
             if (!orgDomainRegex.test(sanitizedCheckEmail)) {
@@ -59,21 +57,21 @@ const SignUp = () => {
             setStatus("Checking availability...");
 
             try {
-                const response = await fetch("http://localhost:8000/api/check-email", {
+                const response = await fetch("http://localhost:5000/api/auth/check-email", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    // 💡 FIXED: Dispatches perfectly formatted lowercase email down the wire
-                    body: JSON.stringify({ email: sanitizedCheckEmail }), 
+                    body: JSON.stringify({ email: sanitizedCheckEmail }),
                 });
 
                 const data = await response.json();
 
                 if (response.status === 200) {
+                    // 🎯 UNIFIED STRING 1: Exact string stored when successful
                     setStatus("✅ Email is available!");
                 } else if (response.status === 409) {
                     setStatus("❌ Email already taken.");
                 } else {
-                    setStatus("⚠️ " + data.message);
+                    setStatus("⚠️ " + (data.message || "Verification failed"));
                 }
             } catch (err) {
                 setStatus("Server Error (Is backend running?)");
@@ -83,39 +81,110 @@ const SignUp = () => {
         validateEmail();
     }, [debouncedEmail]);
 
-    const handleSignUp = async (e) => {
-        e.preventDefault(); 
+    const handleSignUp = async(e)=>{
 
-        if (status !== "✅ Email is available!") {
-            alert("Please use a unique and valid institutional email.");
-            return;
-        }
+e.preventDefault();
 
-        const finalCleanEmail = email.trim().toLowerCase();
 
-        try {
-            const response = await fetch("http://localhost:8000/api/signup", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    email: finalCleanEmail, // 💡 FIXED: Dispatches clean lowercase string to MongoDB
-                    password: passWord
-                }),
-            });
+if(!email || !passWord){
 
-            const data = await response.json();
+alert("Fill all fields");
 
-            if (response.status === 201) {
-                alert("Signup Successful!");
-                navigate("/SignIn"); 
-            } else {
-                alert(data.message || "Signup failed");
-            }
-        } catch (err) {
-            console.error("Signup Error:", err);
-            alert("Connection failed. Is the server running?");
-        }
-    };
+return;
+
+}
+
+
+
+const cleanEmail =
+email.trim().toLowerCase();
+
+
+
+try{
+
+
+const response =
+await fetch(
+"http://localhost:5000/api/auth/signup",
+{
+
+
+method:"POST",
+
+
+headers:{
+
+"Content-Type":"application/json"
+
+},
+
+
+body:JSON.stringify({
+
+email:cleanEmail,
+
+password:passWord
+
+})
+
+
+});
+
+
+
+
+
+const data =
+await response.json();
+
+
+
+
+
+if(response.status===201){
+
+
+localStorage.setItem(
+"token",
+data.token
+);
+
+
+
+alert("Signup Successful");
+
+
+navigate("/SignIn");
+
+
+}
+
+else{
+
+
+alert(data.message);
+
+
+}
+
+
+
+}catch(error){
+
+
+console.log(error);
+
+
+alert(
+"Backend connection failed"
+);
+
+
+}
+
+
+};
 
     return (
         <Fragment>
@@ -141,6 +210,7 @@ const SignUp = () => {
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
                                     />
+                                    {/* 🎨 COLOR FIX: Perfectly matches the ✅ checkmark emoji, text flips to clean green code instantly */}
                                     <span className={`text-[12px] font-medium ml-1 ${status.includes('✅') ? 'text-green-600' : 'text-red-500'}`}>
                                         {status}
                                     </span>
@@ -159,6 +229,7 @@ const SignUp = () => {
                                 <button
                                     type="submit"
                                     className="inline-block rounded-sm bg-indigo-600 px-8 py-3 text-sm font-medium text-white transition hover:scale-110 hover:shadow-xl text-center disabled:bg-gray-400 cursor-pointer mt-2"
+                                    // 🎯 UNIFIED STRING 3: Unlocks cleanly based on exact match condition
                                     disabled={status !== "✅ Email is available!"}
                                 >
                                     SignUp

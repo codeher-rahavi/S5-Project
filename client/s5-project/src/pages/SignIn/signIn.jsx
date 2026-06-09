@@ -12,22 +12,24 @@ const SignIn = () => {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            // Trim whitespace to prevent formatting bugs during form submission
             const cleanEmail = email.trim().toLowerCase();
 
-            const response = await fetch("http://localhost:8000/api/login", {
+            // 1. Send credentials to your new backend server running on Port 5000
+            const response = await fetch("http://localhost:5000/api/auth/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     email: cleanEmail,
-                    passWord: passWord
+                    password: passWord // Matches the lower-case 'password' expected by your new schema
                 }),
             });
 
             const data = await response.json();
 
             if (response.ok && data.success) {
-                const serverRole = data.user?.role ? data.user.role.toUpperCase() : 'STUDENT';
+                // 2. Extract the fresh JWT token and user info sent by your new backend
+                const token = data.token;
+                const serverRole = data.user?.role ? data.user.role.toUpperCase() : 'OPERATOR';
 
                 const fullyAuthorizedUser = {
                     ...data.user,
@@ -35,18 +37,21 @@ const SignIn = () => {
                     role: serverRole
                 };
 
-                // 💡 SWAPPED: Save to sessionStorage to isolate individual testing windows
+                // 3. CRITICAL: Save the unique JWT token to sessionStorage 
+                // This overwrites any lingering ghost tokens from your previous project!
+                sessionStorage.setItem("token", token);
                 sessionStorage.setItem("user", JSON.stringify(fullyAuthorizedUser));
-                setUser(fullyAuthorizedUser);
 
+                alert("Login Successful!");
+
+                // 4. Redirect safely to your main landing page
                 if (serverRole === "ADMIN") {
                     navigate("/Admin/dashboard");
                 } else {
-                    navigate("/Overview");
+                    navigate("/Overview"); // Your main IoT Fleet overview dashboard page
                 }
 
             } else {
-                // If backend validation fails or account is locked, show server's message
                 alert(data.message || "Invalid Email or Password");
             }
         } catch (err) {
@@ -54,7 +59,6 @@ const SignIn = () => {
             alert("Server Error. Please verify your connection status and backend execution logs.");
         }
     };
-
     const handleForgotPasswordClick = async () => {
         const emailInput = prompt("Please enter your registered email:");
         if (!emailInput) return;
