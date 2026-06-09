@@ -38,7 +38,6 @@ const SignUp = () => {
 
     const debouncedEmail = useDebounce(email, 500);
 
-    // 📡 GATE 1: Real-Time Availability Check Sanitization
     useEffect(() => {
         const validateEmail = async () => {
             // 💡 UPDATED: Regex now strictly enforces your institutional organizational domain requirement
@@ -84,7 +83,6 @@ const SignUp = () => {
         validateEmail();
     }, [debouncedEmail]);
 
-    // 📥 GATE 2: Final Submission Database Cataloging Sanitization
     const handleSignUp = async (e) => {
         e.preventDefault(); 
 
@@ -93,7 +91,6 @@ const SignUp = () => {
             return;
         }
 
-        // 🧼 SANITIZE submission data payload string completely
         const finalCleanEmail = email.trim().toLowerCase();
 
         try {
@@ -135,7 +132,6 @@ const SignUp = () => {
 
                 <div className="relative min-h-screen">
                     <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-                        {/* 💡 FIXED: Form tracking listener fires cleanly */}
                         <form onSubmit={handleSignUp}>
                             <div className="flex flex-col gap-3 h-[540px] w-[500px] p-10">
                                 <h2 className="text-3xl font-semibold mb-5">Sign Up</h2>
