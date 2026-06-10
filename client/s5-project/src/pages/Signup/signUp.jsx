@@ -37,7 +37,6 @@ const SignUp = () => {
     };
 
     const debouncedEmail = useDebounce(email, 500);
-
     useEffect(() => {
         const validateEmail = async () => {
             const orgDomainRegex = /^[a-z0-9._%+-]+@bitsathy\.ac\.in$/;
@@ -46,25 +45,19 @@ const SignUp = () => {
                 setStatus("");
                 return;
             }
-
             const sanitizedCheckEmail = debouncedEmail.trim().toLowerCase();
-
             if (!orgDomainRegex.test(sanitizedCheckEmail)) {
                 setStatus("❌ Must be a valid @bitsathy.ac.in institutional email.");
                 return;
             }
-
             setStatus("Checking availability...");
-
             try {
                 const response = await fetch("http://localhost:5000/api/auth/check-email", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ email: sanitizedCheckEmail }),
                 });
-
                 const data = await response.json();
-
                 if (response.status === 200) {
                     // 🎯 UNIFIED STRING 1: Exact string stored when successful
                     setStatus("✅ Email is available!");
@@ -77,114 +70,55 @@ const SignUp = () => {
                 setStatus("Server Error (Is backend running?)");
             }
         };
-
         validateEmail();
     }, [debouncedEmail]);
+    const handleSignUp = async (e) => {
+        e.preventDefault();
+        if (!email || !passWord) {
+            alert("Fill all fields");
+            return;
+        }
+        const cleanEmail =
+            email.trim().toLowerCase();
+        try {
+            const response =
+                await fetch(
+                    "http://localhost:5000/api/auth/signup",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            email: cleanEmail,
+                            password: passWord
 
-    const handleSignUp = async(e)=>{
+                        })
+                    });
 
-e.preventDefault();
+            const data =await response.json();
 
-
-if(!email || !passWord){
-
-alert("Fill all fields");
-
-return;
-
-}
-
-
-
-const cleanEmail =
-email.trim().toLowerCase();
-
-
-
-try{
-
-
-const response =
-await fetch(
-"http://localhost:5000/api/auth/signup",
-{
-
-
-method:"POST",
-
-
-headers:{
-
-"Content-Type":"application/json"
-
-},
-
-
-body:JSON.stringify({
-
-email:cleanEmail,
-
-password:passWord
-
-})
-
-
-});
+            if (response.status === 201) {
+                localStorage.setItem(
+                    "token",
+                    data.token
+                );
+                alert("Signup Successful");
+                navigate("/SignIn");
+            }
+            else {
+                alert(data.message);
+            }
 
 
 
+        } catch (error) {
+            console.log(error);
+            alert("Backend connection failed");
+        }
 
 
-const data =
-await response.json();
-
-
-
-
-
-if(response.status===201){
-
-
-localStorage.setItem(
-"token",
-data.token
-);
-
-
-
-alert("Signup Successful");
-
-
-navigate("/SignIn");
-
-
-}
-
-else{
-
-
-alert(data.message);
-
-
-}
-
-
-
-}catch(error){
-
-
-console.log(error);
-
-
-alert(
-"Backend connection failed"
-);
-
-
-}
-
-
-};
+    };
 
     return (
         <Fragment>

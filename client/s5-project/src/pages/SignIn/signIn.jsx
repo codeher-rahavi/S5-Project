@@ -46,9 +46,9 @@ const SignIn = () => {
 
                 // 4. Redirect safely to your main landing page
                 if (serverRole === "ADMIN") {
-                    navigate("/Admin/dashboard");
+                    navigate("/Admin/dashboarb");
                 } else {
-                    navigate("/Overview"); // Your main IoT Fleet overview dashboard page
+                    navigate("/Home"); // Your main IoT Fleet overview dashboard page
                 }
 
             } else {
