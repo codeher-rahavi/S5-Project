@@ -75,17 +75,6 @@ message:error.message
 
 });
 
-
-
-
-
-
-
-
-
-// SIGNUP
-
-
 router.post(
 "/signup",
 async(req,res)=>{

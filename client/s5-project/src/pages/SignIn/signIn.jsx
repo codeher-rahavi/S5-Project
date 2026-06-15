@@ -64,7 +64,7 @@ const SignIn = () => {
         if (!emailInput) return;
 
         try {
-            const response = await fetch("http://localhost:8000/api/forgotPassword", {
+            const response = await fetch("http://localhost:5000/api/auth/forgotPassword", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email: emailInput.trim().toLowerCase() })
@@ -96,6 +96,7 @@ const SignIn = () => {
                             onChange={(e) => setPassWord(e.target.value)}
                         />
                         <button
+                    
                             type="submit"
                             className="inline-block rounded-sm bg-indigo-600 px-8 py-3 text-sm font-medium text-white transition hover:scale-110 hover:shadow-xl text-center cursor-pointer"
                         >
