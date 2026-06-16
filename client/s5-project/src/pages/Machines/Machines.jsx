@@ -1,6 +1,6 @@
 import React from "react";
 import Sidebar from "../../components/Sidebar/Sidebar";
-import MachineCard from "../../components/MachineCard/MachineCard";
+import MachineCard from "../../MachineCard/machineCard";
 
 const Machines = () => {
     const machines = [
@@ -25,7 +25,7 @@ const Machines = () => {
     ];
     return (
         <div className="flex min-h-screen bg-slate-100">
-            <Sidebar />
+            <Sidebar/>
             <div className="flex-1 p-10">
                 <h1 className="text-3xl font-bold">
                     Machines
@@ -36,10 +36,8 @@ const Machines = () => {
                 <div className="grid md:grid-cols-3 gap-6 mt-10">
                     {
                         machines.map((machine, index) => (
-                            <MachineCard
-                                key={index}
-                                machine={machine}
-                            />
+                            <MachineCard key={index}
+                                machine={machine}/>
                         ))
                     }
                 </div>

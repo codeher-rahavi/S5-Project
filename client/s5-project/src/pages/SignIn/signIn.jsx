@@ -45,11 +45,7 @@ const SignIn = () => {
                 alert("Login Successful!");
 
                 // 4. Redirect safely to your main landing page
-                if (serverRole === "ADMIN") {
-                    navigate("/Admin/dashboarb");
-                } else {
-                    navigate("/Home"); // Your main IoT Fleet overview dashboard page
-                }
+                navigate("/Dashboard");
 
             } else {
                 alert(data.message || "Invalid Email or Password");
@@ -96,7 +92,7 @@ const SignIn = () => {
                             onChange={(e) => setPassWord(e.target.value)}
                         />
                         <button
-                    
+
                             type="submit"
                             className="inline-block rounded-sm bg-indigo-600 px-8 py-3 text-sm font-medium text-white transition hover:scale-110 hover:shadow-xl text-center cursor-pointer"
                         >
