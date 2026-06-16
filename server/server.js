@@ -11,6 +11,7 @@ app.use(express.json());
 
 // Mount Authentication Routes
 app.use('/api/auth', require('./routes/auth'));
+app.use('/api/machines',require('./routes/machineRoutes'));
 
 // Base Health-Check Route
 app.get('/', (req, res) => {
